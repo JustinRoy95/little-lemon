@@ -2,13 +2,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, Image, Pressable, TextInput, FlatList } from 'react-native';
-import { setData } from '@/utils/helpers';
+import { setData, Filter } from '@/utils/helpers';
 import { Ionicons } from '@expo/vector-icons';
 import * as SQLite from 'expo-sqlite';
-import { MenuItems, Filter, initializeDB, retrieveItems, storeItems } from '@/utils/database';
+import { MenuItems, initializeDB, retrieveItems, storeItems } from '@/utils/database';
 import debounce from 'lodash.debounce';
-
-
 
 function Home() {
     const router = useRouter();
@@ -20,7 +18,6 @@ function Home() {
     const [debouncedQuery, setDebouncedQuery] = useState('');
 
     const [menu, setMenu] = useState([]);
-    const [filteredData, setFilteredData] = useState([]);
     const [filters, setFilters] = useState<Filter[]>([]);
 
     useEffect(() => {
@@ -28,25 +25,21 @@ function Home() {
     }, []);
 
     useEffect(() => {
-        let activatedFilters = filters.filter(f => f.value == true).map(f => f.name);
+        const filterData = async () => {
+            let activatedFilters = filters.filter(f => f.value == true).map(f => f.name);
 
-        if (debouncedQuery.length == 0 && activatedFilters.length == 0) {
-            setFilteredData(menu);
-            return;
+            const db = await SQLite.openDatabaseAsync('little-lemon.db');
+            initializeDB(db);
+            if (debouncedQuery.length == 0 && activatedFilters.length == 0) {
+                const filteredMenu: any = await retrieveItems(db);
+                setMenu(filteredMenu);
+            }
+            else if (debouncedQuery.length > 0 || activatedFilters.length > 0) {
+                const filteredMenu: any = await retrieveItems(db, query, activatedFilters);
+                setMenu(filteredMenu);
+            }
         }
-
-        let filteredMenu = menu;
-        if (activatedFilters.length > 0 ) {
-            filteredMenu = filteredMenu.filter((entry: MenuItems) => {
-                return activatedFilters.includes(entry.category);
-            });
-        }
-        if (debouncedQuery.length > 0) {
-            filteredMenu = filteredMenu.filter((entry: MenuItems) => {
-                return entry.name.toLowerCase().includes(debouncedQuery.toLowerCase());
-            })
-        }
-        setFilteredData(filteredMenu);
+        filterData();
     }, [debouncedQuery, filters]);
 
     const lookup = useCallback((q: string) => {
@@ -89,19 +82,18 @@ function Home() {
             setData(results.lastName, setLastName);
             setData(results.image, setImage);
 
-            const db = await SQLite.openDatabaseAsync('LittleLemonDB.db');
+
+            const db = await SQLite.openDatabaseAsync('little-lemon.db');
             initializeDB(db);
             let dbData: any = await retrieveItems(db);
 
             if (dbData?.length) {
                 setMenu(dbData);
-                setFilteredData(dbData);
                 handleCategories(dbData);
             } else {
                 const response = await fetch('https://raw.githubusercontent.com/Meta-Mobile-Developer-PC/Working-With-Data-API/main/capstone.json');
                 const json = await response.json();
                 setMenu(json.menu);
-                setFilteredData(json.menu);
                 storeItems(db, json.menu);
                 handleCategories(json.menu);
             }
@@ -223,7 +215,7 @@ function Home() {
                     />
                 </View>
                 <FlatList
-                    data={filteredData}
+                    data={menu}
                     renderItem={renderItem}
                     keyExtractor={item => item.name}
                 />

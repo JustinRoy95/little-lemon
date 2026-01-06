@@ -1,6 +1,11 @@
 import React from 'react'
 import { MenuItems } from './database';
 
+export type Filter = {
+    name: string,
+    value: boolean
+}
+
 const validateEmail = (email: string) => {
     // A robust, common regex for email validation
     const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;

@@ -8,11 +8,6 @@ export type MenuItems = {
     image: string;
 }
 
-export type Filter = {
-    name: string,
-    value: boolean
-}
-
 export async function initializeDB(db: SQLite.SQLiteDatabase) {
     await db.execAsync(`
         CREATE TABLE IF NOT EXISTS menuitems (
@@ -25,11 +20,19 @@ export async function initializeDB(db: SQLite.SQLiteDatabase) {
     `);
 }
 
-export async function retrieveItems(db: SQLite.SQLiteDatabase) {
-    const entries =  await db.getAllAsync(`
+export async function retrieveItems(db: SQLite.SQLiteDatabase, query: string | null = null, categories: string[] | null = null) {
+    if (query?.length || categories?.length) {
+        let queryLayout = `SELECT * FROM menuitems WHERE name LIKE ?`
+        if (categories?.length) {
+            const questionMarks = categories.map(() => '?').join(',');
+            queryLayout += ` AND category in (${questionMarks})`
+            return await db.getAllAsync(queryLayout, [`%${query}%`, ...categories]);
+        }
+        return await db.getAllAsync(queryLayout, [`%${query}%`]);
+    }
+    return await db.getAllAsync(`
         SELECT * FROM menuitems;
     `);
-    return entries;
 }
 
 export async function storeItems(db: SQLite.SQLiteDatabase, items: MenuItems[]) {
