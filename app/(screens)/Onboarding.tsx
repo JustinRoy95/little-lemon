@@ -19,7 +19,7 @@ function Onboarding() {
             } catch (error) {
                 console.log("An error occured while trying to save your information: ", error);
             } finally {
-                router.replace('/Profile');
+                router.replace('/Home');
             }
         }
     }

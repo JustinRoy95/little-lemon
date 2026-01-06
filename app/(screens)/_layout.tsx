@@ -37,9 +37,12 @@ export default function ScreensLayout() {
                 <ActivityIndicator /> 
                 :
                 <Stack>
-                    { name && email ? 
-                    <Stack.Screen name="Profile"/>
-                    : 
+                    { name && email ? (
+                    <>
+                        <Stack.Screen name="Home" />
+                        <Stack.Screen name="Profile" />
+                    </>
+                    ) : 
                     <Stack.Screen name="Onboarding"/>
                     }
                 </Stack>

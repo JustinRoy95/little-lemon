@@ -5,8 +5,7 @@ import { ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View, Pre
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Checkbox } from 'expo-checkbox';
-import { validateEmail } from '../../utils/helpers';
-import { validateNumber } from '../../utils/helpers';
+import { validateEmail, validateNumber, setData } from '../../utils/helpers';
 
 function Profile() {
     const router = useRouter();
@@ -43,30 +42,20 @@ function Profile() {
             const request = await AsyncStorage.multiGet(['firstName','lastName', 'email', 'number','image', 'statuses', 'passwordChanges', 'offers', 'newsletters']);
             const results = Object.fromEntries(request);
 
-            setData(results['firstName'], setFirstName);
-            setData(results['lastName'], setLastName);
-            setData(results['email'], setEmail);
-            setData(results['number'], setNumber);
-            setData(results['image'], setImage)
-            setData(results['statuses'], setNotifyStatuses, notifyStatuses);
-            setData(results['passwordChanges'], setNotifyPasswordChanges, notifyPasswordChanges);
-            setData(results['offers'], setNotifySpecialOffers, notifySpecialOffers);
-            setData(results['newsletter'], setNotifyNewsletter, notifyNewsletter);
+            setData(results.firstName, setFirstName);
+            setData(results.lastName, setLastName);
+            setData(results.email, setEmail);
+            setData(results.number, setNumber);
+            setData(results.image, setImage)
+            setData(results.statuses, setNotifyStatuses, notifyStatuses);
+            setData(results.passwordChanges, setNotifyPasswordChanges, notifyPasswordChanges);
+            setData(results.offers, setNotifySpecialOffers, notifySpecialOffers);
+            setData(results.newsletter, setNotifyNewsletter, notifyNewsletter);
 
         } catch (error) {
             console.log('Something went wrong loading the user information', error);
         } finally {
             setIsLoading(false);
-        }
-    }
-
-    const setData = (data: string | boolean | null, setter: Function, alternate: boolean | null = null) => {
-        if (data) {
-            setter(data);
-        } else if (alternate === null) {
-            setter('');
-        } else {
-            setter(alternate)
         }
     }
 
@@ -79,6 +68,7 @@ function Profile() {
 
         if (!result.canceled) {
             setImage(result.assets[0].uri);
+            await AsyncStorage.setItem('image', result.assets[0].uri);
         }
     }
 
@@ -106,7 +96,6 @@ function Profile() {
             ['offers', notifySpecialOffers.toString()],
             ['newsletter', notifyNewsletter.toString()]
         ]);
-        console.log(image);
         if (image) {
             await AsyncStorage.setItem('image', image);
         }
@@ -126,9 +115,8 @@ function Profile() {
                 <>
                     <View style={styles.header}>
                         <TouchableOpacity 
-                            onPress={() => router.back()}
+                            onPress={() => router.replace('/Home')}
                             style={styles.backArrow}
-                            disabled={true}
                         >
                             <Ionicons 
                                 name='arrow-back-outline'
