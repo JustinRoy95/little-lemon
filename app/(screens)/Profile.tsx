@@ -116,7 +116,7 @@ function Profile() {
                     <View style={styles.header}>
                         <TouchableOpacity 
                             onPress={() => router.replace('/Home')}
-                            style={styles.backArrow}
+                            style={[styles.backArrow, styles.center, styles.iconSize]}
                         >
                             <Ionicons 
                                 name='arrow-back-outline'
@@ -130,9 +130,9 @@ function Profile() {
                             style={styles.logo}
                         />
                         { image ?
-                            <Image source={{uri: image}} style={styles.profilePic} />
+                            <Image source={{uri: image}} style={[styles.profilePic, styles.iconSize]} />
                             :
-                            <View style={styles.placeholder}><Text style={styles.profileText}>{firstName[0]}{lastName && lastName[0]}</Text></View>
+                            <View style={[styles.placeholder, styles.center, styles.iconSize]}><Text style={styles.profileText}>{firstName[0]}{lastName && lastName[0]}</Text></View>
                         }
                     </View>
                     <View style={styles.body}>
@@ -142,34 +142,34 @@ function Profile() {
                             { image ?
                             <Image source={{uri: image}} style={[styles.profilePic, {height: 70, width: 70, borderRadius: 35}]} />
                                 :
-                                <View style={styles.picker}><Text style={styles.profileText}>{firstName[0]}{lastName && lastName[0]}</Text></View>
+                                <View style={[styles.picker, styles.center]}><Text style={styles.profileText}>{firstName[0]}{lastName && lastName[0]}</Text></View>
                             }
-                            <Pressable style={styles.changeAvatarButton} onPress={change}><Text style={styles.changeAvatarButtonText}>Change</Text></Pressable>
-                            <Pressable onPress={remove}><Text style={styles.removeAvatarButtonText}>Remove</Text></Pressable>
+                            <Pressable style={[styles.changeAvatarButton, styles.center, styles.border]} onPress={change}><Text style={[styles.changeAvatarButtonText]}>Change</Text></Pressable>
+                            <Pressable onPress={remove}><Text style={[styles.removeAvatarButtonText, styles.border]}>Remove</Text></Pressable>
                         </View>
                         
                         <Text style={styles.general}>First Name</Text>
                         <TextInput 
-                            style={styles.input}
+                            style={[styles.input, styles.border]}
                             value={firstName}
                             onChangeText={setFirstName} />
 
                         <Text style={styles.general}>Last Name</Text>
                         <TextInput 
-                            style={styles.input}
+                            style={[styles.input, styles.border]}
                             value={lastName}
                             onChangeText={setLastName} />
 
                         <Text style={styles.general}>Email</Text>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, styles.border]}
                             value={email}
                             onChangeText={setEmail}
                             keyboardType='email-address' />
 
                         <Text style={styles.general}>Phone number</Text>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, styles.border]}
                             value={number}
                             onChangeText={setNumber}
                             keyboardType='phone-pad'
@@ -212,13 +212,13 @@ function Profile() {
                             <Text style={styles.checkboxText}>Newsletter</Text>
                         </View>
 
-                        <Pressable onPress={logout} style={styles.logout}>
+                        <Pressable onPress={logout} style={[styles.logout, styles.center, styles.border]}>
                             <Text style={styles.logoutText}>Log out</Text>
                         </Pressable>
 
                         <View style={styles.bottomButtons}>
                             <Pressable onPress={discard}>
-                                <Text style={styles.discardChanges}>Discard changes</Text>
+                                <Text style={[styles.discardChanges, styles.border]}>Discard changes</Text>
                             </Pressable>
                             <Pressable style={[styles.saveChanges, isDisabled ? {backgroundColor: '#d9d9d9ff'} : {backgroundColor: '#364e46ff'}]} onPress={save} disabled={isDisabled}>
                                 <Text style={styles.changeAvatarButtonText}>Save changes</Text>
@@ -242,39 +242,34 @@ const styles = StyleSheet.create({
         height: '50%',
         width: '40%'
     },
-    backArrow: {
-        color: 'white',
-        backgroundColor: '#364e46ff',
-        marginLeft: 15,
-        borderRadius: 20,
-        height: 40,
-        width: 40,
+    center: {
         justifyContent: 'center',
         alignItems: 'center'
     },
-    profilePic: {
+    iconSize: {
         height: 40,
-        width: 40,
+        width: 40
+    },
+    backArrow: {
+        color: '#ffffff',
+        backgroundColor: '#364e46ff',
+        marginLeft: 15,
+        borderRadius: 20,
+    },
+    profilePic: {
         borderRadius: 20,
         marginRight: 15
     },
     placeholder: {
         marginRight: 15,
-        borderStyle: 'solid',
-        borderColor: 'black',
         borderWidth: 1,
-        height: 40,
-        width: 40,
         borderRadius: 20,
-        justifyContent: 'center',
-        alignItems: 'center'
     },
     profileText: {
         fontSize: 25,
     },
     body: {
         flex: 12,
-        borderStyle: 'solid',
         borderWidth: 0.5,
         borderColor: '#c0c0c0ff',
         borderRadius: 10,
@@ -302,20 +297,17 @@ const styles = StyleSheet.create({
     },
     picker: {
         marginRight: 15,
-        borderStyle: 'solid',
-        borderColor: 'black',
         borderWidth: 1,
         height: 60,
         width: 60,
         borderRadius: 35,
-        justifyContent: 'center',
-        alignItems: 'center' 
+    },
+    border: {
+        borderWidth: 1,
+        borderRadius: 5,
     },
     changeAvatarButton: {
         backgroundColor: '#364e46ff',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 5,
         marginRight: 15
     },
     changeAvatarButtonText: {
@@ -326,10 +318,7 @@ const styles = StyleSheet.create({
     removeAvatarButtonText: {
         color: '#566b64ff',
         fontWeight: '500',
-        borderStyle: 'solid',
-        borderWidth: 1,
         borderColor: '#3a5d51ff',
-        borderRadius: 5,
         paddingVertical: 8,
         paddingHorizontal: 15
     },
@@ -342,9 +331,6 @@ const styles = StyleSheet.create({
         color: '#606060ff',
     },
     input: {
-        borderWidth: 1,
-        borderStyle: 'solid',
-        borderRadius: 5,
         paddingHorizontal: 10,
         marginHorizontal: 15,
     },
@@ -362,10 +348,6 @@ const styles = StyleSheet.create({
         marginVertical: 20,
         marginHorizontal: 15,
         backgroundColor: '#f4b814ff',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderRadius: 5,
         borderColor: '#bc7100ff'
 
     },
@@ -384,9 +366,6 @@ const styles = StyleSheet.create({
     discardChanges: {
         color: '#566b64ff',
         fontWeight: '500',
-        borderRadius: 5,
-        borderStyle: 'solid',
-        borderWidth: 1,
         borderColor: '#3a5d51ff',
         paddingVertical: 8,
         paddingHorizontal: 15
